@@ -46,4 +46,30 @@
 
     </PreferenceCategory>
 
+    <PreferenceCategory app:title="@string/about_header">
+
+        <Preference
+            app:key="@string/key_preference_original_copyright_info"
+            app:title="Copyright © 2015 Christian Illies"
+            app:summary="https://github.com/kloener/visor-android/"
+            app:selectable="false" />
+
+        <Preference
+            app:key="@string/key_preference_license_info"
+            app:title="@string/license_title"
+            app:summary="@string/license_summary" />
+
+        <Preference
+            app:key="@string/key_preference_fork_info"
+            app:title="Forked and modified by cuzi"
+            app:summary="github.com/cvzi"
+            app:selectable="false" />
+
+        <Preference
+            app:key="@string/key_preference_repository_link"
+            app:title="Source Code"
+            app:summary="github.com/cvzi/magnifyingglass" />
+
+    </PreferenceCategory>
+
 </PreferenceScreen>

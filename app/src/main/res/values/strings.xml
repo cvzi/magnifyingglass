@@ -19,6 +19,9 @@
     <string name="text_autofocus_enabled">Autofocus enabled.</string>
     <string name="text_autofocus_disabled">Autofocus disabled. Tap to focus.</string>
     <string name="text_image_stored">Image stored in path </string>
+    <string name="about_header">About</string>
+    <string name="license_title">License</string>
+    <string name="license_summary">Licensed under the Apache License, Version 2.0. Tap to view the full license.</string>
 
     <!-- Key names (equal in all languages) -->
     <string name="key_preference_zoom_level" translatable="false">VisorAndroidKeyPreferenceZoomLevel</string>
@@ -31,7 +34,12 @@
     <string name="key_preference_auto_torch" translatable="false">VisorAndroidKeyPreferenceAutoTorch</string>
     <string name="key_preference_preview_resolution" translatable="false">VisorAndroidKeyPreferencePreviewResolution</string>
     <string name="key_preference_camera_id" translatable="false">VisorAndroidKeyPreferenceCameraId</string>
+    <string name="key_preference_original_copyright_info" translatable="false">MagnifyingGlassKeyPreferenceOriginalCopyrightInfo</string>
+    <string name="key_preference_fork_info" translatable="false">MagnifyingGlassKeyPreferenceForkInfo</string>
+    <string name="key_preference_license_info" translatable="false">MagnifyingGlassKeyPreferenceLicenseInfo</string>
+    <string name="key_preference_repository_link" translatable="false">MagnifyingGlassKeyPreferenceRepositoryLink</string>
 
+    <string name="repository_url" translatable="false">https://github.com/cvzi/magnifyingglass</string>
 
     <!-- Preference Titles -->
     <string name="title_activity_settings">Settings</string>
@@ -53,4 +61,5 @@
     <string name="main_camera">Main camera</string>
     <string name="selfie_camera">Selfie camera</string>
     <string name="wide_or_other_camera">Wide or other</string>
+
 </resources>

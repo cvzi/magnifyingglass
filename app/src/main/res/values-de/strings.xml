@@ -19,6 +19,9 @@
     <string name="text_autofocus_enabled">Autofokus aktiviert.</string>
     <string name="text_autofocus_disabled">Autofokus deaktiviert. Antippen zum Fokussieren.</string>
     <string name="text_image_stored">Bild gespeichert unter </string>
+    <string name="about_header">Info</string>
+    <string name="license_title">Lizenz</string>
+    <string name="license_summary">Lizenziert unter der Apache License, Version 2.0. Tippe hier, um den vollständigen Lizenztext zu lesen.</string>
 
     <!-- Preference Titles -->
     <string name="title_activity_settings">Einstellungen</string>

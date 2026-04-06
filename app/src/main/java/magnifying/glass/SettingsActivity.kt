@@ -11,13 +11,17 @@
  */
 package magnifying.glass
 
+import android.content.Intent
 import android.hardware.Camera
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AlertDialog
 import androidx.preference.DropDownPreference
+import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import kotlin.math.max
+import androidx.core.net.toUri
 
 
 class SettingsActivity : AppCompatActivity() {
@@ -47,6 +51,8 @@ class SettingsActivity : AppCompatActivity() {
             setPreferencesFromResource(R.xml.root_preferences, rootKey)
             initPreviewResolutionWidth()
             initCameraChooser()
+            initLicenseDialog()
+            initRepositoryLink()
         }
 
         private fun initCameraChooser() {
@@ -82,6 +88,34 @@ class SettingsActivity : AppCompatActivity() {
                 val currentPreviewWidth = visorSurface.cameraPreviewWidth
                 val currentIndex = max(0, availablePreviewWidths.indexOf(currentPreviewWidth.toString()))
                 previewResolutionPreference.setValueIndex(currentIndex)
+            }
+        }
+
+        private fun initLicenseDialog() {
+            val licensePreference = findPreference<Preference>(resources.getString(R.string.key_preference_license_info))
+            licensePreference?.setOnPreferenceClickListener {
+                val licenseText = resources.openRawResource(R.raw.apache_license_version_2_0)
+                    .bufferedReader()
+                    .use { reader -> reader.readText() }
+
+                AlertDialog.Builder(requireContext())
+                    .setTitle(R.string.license_title)
+                    .setMessage(licenseText)
+                    .setPositiveButton(android.R.string.ok, null)
+                    .show()
+                true
+            }
+        }
+
+        private fun initRepositoryLink() {
+            val repositoryPreference = findPreference<Preference>(resources.getString(R.string.key_preference_repository_link))
+            repositoryPreference?.setOnPreferenceClickListener {
+                val viewRepositoryIntent = Intent(
+                    Intent.ACTION_VIEW,
+                    resources.getString(R.string.repository_url).toUri()
+                )
+                startActivity(viewRepositoryIntent)
+                true
             }
         }
 
