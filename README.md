@@ -1,12 +1,12 @@
 # Magnifying Glass
 
-Modified fork of https://github.com/kloener/visor-android
-
-File modified by cuzi <https://github.com/cvzi/>
+Forked from https://github.com/kloener/visor-android
 
 
+*Magnifying Glass* transforms your Android device into a simple, powerful magnifier for low-vision use. Enlarge hard-to-read text with the live camera preview, zoom in for extra clarity, and enhance visibility with high-contrast color modes optimized for printed text. Pause the image anytime and save it for later reference.
 
-## Licence
+
+## License
 
 Copyright (c) 2015 Christian Illies
 
@@ -22,3 +22,10 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 
+Modified by [@cvzi](https://github.com/cvzi).
+
+### App Icon
+
+![App Icon](fastlane/metadata/android/en-US/images/icon.png)
+
+From [Google Fonts](https://fonts.google.com/icons), Apache License, Version 2.0
