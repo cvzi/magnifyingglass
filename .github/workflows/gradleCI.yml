@@ -44,7 +44,7 @@ jobs:
       run: |
         ./gradlew build
 
-    - name: 🎁 Build release (common key)
+    - name: 🎁 Build apk (common key)
       run: |
         ./gradlew assembleRelease \
         --project-prop keystore=../github_release.jks \
@@ -68,7 +68,7 @@ jobs:
         name: signed-apk
         path: mag_commit_${{ github.sha }}.apk
 
-    - name: 🎁 Build release (release key)
+    - name: 🎁 Build apk (publish key)
       run: |
         ./gradlew assembleRelease \
         --project-prop keystore=../github_release.jks \
@@ -107,7 +107,7 @@ jobs:
         name: release-apk
         path: mag${{ steps.version.outputs.versionCode }}.apk
 
-    - name: 🎉 Publish Github release
+    - name: 🎉 Publish Github apk
       if: ${{ github.ref_type == 'tag' }}
       uses: softprops/action-gh-release@v2
       with:
