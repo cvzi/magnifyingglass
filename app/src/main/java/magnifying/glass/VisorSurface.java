@@ -26,7 +26,6 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.hardware.Camera;
 import android.media.MediaActionSound;
-import android.os.Build;
 import android.util.Log;
 import android.view.Display;
 import android.view.Surface;
@@ -40,8 +39,6 @@ import androidx.preference.PreferenceManager;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import magnifying.glass.filters.BlackWhiteColorFilter;
@@ -187,7 +184,7 @@ public class VisorSurface extends SurfaceView implements SurfaceHolder.Callback,
     /**
      *
      */
-    private SurfaceHolder mHolder;
+    private final SurfaceHolder mHolder;
 
     /**
      * The camera device reference.
@@ -213,12 +210,12 @@ public class VisorSurface extends SurfaceView implements SurfaceHolder.Callback,
     /**
      * the width of the view.
      */
-    private int width;
+    private final int width;
 
     /**
      * the height of the view
      */
-    private int height;
+    private final int height;
 
     /**
      * the maximum possible width of the camera preview that we'll use.
@@ -239,7 +236,7 @@ public class VisorSurface extends SurfaceView implements SurfaceHolder.Callback,
      * the paint object which has the colorFilter assigned. We will use it
      * to apply the different color modes to the rendered preview bitmap.
      */
-    private Paint mColorFilterPaint;
+    private final Paint mColorFilterPaint;
 
     /**
      * the current state of the camera device.
@@ -335,7 +332,7 @@ public class VisorSurface extends SurfaceView implements SurfaceHolder.Callback,
     /**
      * auto focus mode which was stored in the shared preferences.
      */
-    private String storedAutoFocusMode;
+    private final String storedAutoFocusMode;
     private boolean mPauseOnReady = false;
     private static int mCameraId;
 
@@ -372,11 +369,8 @@ public class VisorSurface extends SurfaceView implements SurfaceHolder.Callback,
 
         Point sizePoint = new Point();
 
-        mDisplay.getSize(sizePoint);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            // getting a preciser value of the screen size to be more accurate.
-            mDisplay.getRealSize(sizePoint);
-        }
+        // getting a preciser value of the screen size to be more accurate.
+        mDisplay.getRealSize(sizePoint);
 
         width = sizePoint.x;
         height = sizePoint.y;
@@ -437,9 +431,7 @@ public class VisorSurface extends SurfaceView implements SurfaceHolder.Callback,
     }
 
     public int getPreferredCameraId() {
-        int preferredCamera = Integer.parseInt(mSharedPreferences.getString(getResources().getString(R.string.key_preference_camera_id), Integer.toString(0)));
-
-        return preferredCamera ;
+        return Integer.parseInt(mSharedPreferences.getString(getResources().getString(R.string.key_preference_camera_id), Integer.toString(0)));
     }
 
     @Override
@@ -499,20 +491,13 @@ public class VisorSurface extends SurfaceView implements SurfaceHolder.Callback,
         int preferredPreviewWidth = Integer.parseInt(mSharedPreferences.getString(getResources().getString(R.string.key_preference_preview_resolution), Integer.toString(UNINITIALIZED_WIDTH)));
 
         List<Camera.Size> size = parameters.getSupportedPreviewSizes();
-        Collections.sort(size, new Comparator<Camera.Size>() {
-            @Override
-            public int compare(Camera.Size lhs, Camera.Size rhs) {
-                if (lhs.width < rhs.width) return -1;
-                if (lhs.width > rhs.width) return 1;
-                return 0;
-            }
-        });
+        size.sort((lhs, rhs) -> Integer.compare(lhs.width, rhs.width));
 
         if (size.size() <= 0) return null;
 
         ArrayList<String> availablePreviewWidths = new ArrayList<>();
         for (int i = 0; i < size.size(); i++) {
-            Log.d(TAG, "Size: " + Integer.toString(size.get(i).width) + " * " + Integer.toString(size.get(i).height));
+            Log.d(TAG, "Size: " + size.get(i).width + " * " + Integer.toString(size.get(i).height));
 
             final int currentWidth = size.get(i).width;
             if (i == 0 || currentWidth != size.get(i-1).width )
@@ -525,7 +510,7 @@ public class VisorSurface extends SurfaceView implements SurfaceHolder.Callback,
         if (result == null)
             result = size.get(size.size() - 1);
         this.availablePreviewWidths = availablePreviewWidths.toArray(new CharSequence[availablePreviewWidths.size()]);
-        Log.d(TAG, "got maximum preview size of " + Integer.toString(result.width) + "*" + Integer.toString(result.height));
+        Log.d(TAG, "got maximum preview size of " + result.width + "*" + result.height);
         return result;
     }
 
@@ -576,7 +561,7 @@ public class VisorSurface extends SurfaceView implements SurfaceHolder.Callback,
 
         mCameraPreviewBitmapBuffer = Bitmap.createBitmap(mCameraPreviewWidth, mCameraPreviewHeight, android.graphics.Bitmap.Config.ARGB_8888);
 
-        /**
+        /*
          * this creation is here just to be sure a scaleMatrix is created.
          *
          * The method "onLayout" should be called before this method, so we always should have a valid scaleMatrix!
@@ -658,21 +643,12 @@ public class VisorSurface extends SurfaceView implements SurfaceHolder.Callback,
         mCameraIsFrontFacing = info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT;
 
         int rotation = activity.getWindowManager().getDefaultDisplay().getRotation();
-        int degrees = 0;
-        switch (rotation) {
-            case Surface.ROTATION_0:
-                degrees = 0;
-                break;
-            case Surface.ROTATION_90:
-                degrees = 90;
-                break;
-            case Surface.ROTATION_180:
-                degrees = 180;
-                break;
-            case Surface.ROTATION_270:
-                degrees = 270;
-                break;
-        }
+        int degrees = switch (rotation) {
+            case Surface.ROTATION_90 -> 90;
+            case Surface.ROTATION_180 -> 180;
+            case Surface.ROTATION_270 -> 270;
+            default -> 0;
+        };
 
         int result;
         if (mCameraIsFrontFacing) {
@@ -708,7 +684,7 @@ public class VisorSurface extends SurfaceView implements SurfaceHolder.Callback,
     }
 
     public MediaActionSound getMediaActionSound() {
-        if (mSound == null && android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+        if (mSound == null) {
             mSound = new MediaActionSound();
             mSound.load(MediaActionSound.START_VIDEO_RECORDING);
             mSound.load(MediaActionSound.STOP_VIDEO_RECORDING);
@@ -722,7 +698,6 @@ public class VisorSurface extends SurfaceView implements SurfaceHolder.Callback,
                 .getString(R.string.key_preference_autofocus_sound), false)) {
             MediaActionSound player = getMediaActionSound();
             if (player == null) return;
-            if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) return;
             player.play(MediaActionSound.FOCUS_COMPLETE);
         }
     }
@@ -732,7 +707,6 @@ public class VisorSurface extends SurfaceView implements SurfaceHolder.Callback,
                 .getString(R.string.key_preference_shutter_sound), false)) {
             MediaActionSound player = getMediaActionSound();
             if (player == null) return;
-            if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) return;
             player.play(MediaActionSound.SHUTTER_CLICK);
         }
     }
@@ -752,15 +726,12 @@ public class VisorSurface extends SurfaceView implements SurfaceHolder.Callback,
 
         final long startAutoFocusing = System.currentTimeMillis();
         try {
-            mCamera.autoFocus(new Camera.AutoFocusCallback() {
-                                  @Override
-                                  public void onAutoFocus(boolean success, Camera camera) {
-                                      if (success) {
-                                          playActionSoundAutofocusComplete();
-                                      }
-                                      Log.d(TAG, "autofocus done with " + (success ? "" : "no ") + "success in " + Long.toString(System.currentTimeMillis() - startAutoFocusing) + "ms");
-                                  }
-                              }
+            mCamera.autoFocus((success, camera) -> {
+                if (success) {
+                    playActionSoundAutofocusComplete();
+                }
+                Log.d(TAG, "autofocus done with " + (success ? "" : "no ") + "success in " + (System.currentTimeMillis() - startAutoFocusing) + "ms");
+            }
             );
         } catch (RuntimeException ex) {
             Log.w(TAG, "autofocus failed");
@@ -840,7 +811,7 @@ public class VisorSurface extends SurfaceView implements SurfaceHolder.Callback,
         if (mState != STATE_PREVIEW) return;
 
         mCameraFlashMode = !mCameraFlashMode;
-        if (mCameraFlashMode == true) {
+        if (mCameraFlashMode) {
             turnFlashlightOn();
         } else {
             turnFlashlightOff();
@@ -870,7 +841,7 @@ public class VisorSurface extends SurfaceView implements SurfaceHolder.Callback,
     private boolean supportsFlashlight() {
         boolean hasFlash = getContext().getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH);
 
-        if (hasFlash == false) {
+        if (!hasFlash) {
             // Log.e(TAG, "the current device does not have a flashlight!");
             return false;
         }
@@ -1081,10 +1052,6 @@ public class VisorSurface extends SurfaceView implements SurfaceHolder.Callback,
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-    }
-
-    public void pausePreviewIfReady() {
-        mPauseOnReady = true;
     }
 
     public int getCameraPreviewWidth() {

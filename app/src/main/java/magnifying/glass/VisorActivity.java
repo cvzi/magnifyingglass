@@ -21,7 +21,6 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -113,7 +112,7 @@ public class VisorActivity extends Activity {
         }
     };
 
-    private View.OnClickListener colorModeClickHandler = new View.OnClickListener() {
+    private final View.OnClickListener colorModeClickHandler = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             v.startAnimation(animScale);
@@ -123,7 +122,7 @@ public class VisorActivity extends Activity {
         }
     };
 
-    private View.OnLongClickListener colorModeLongClickHandler = new View.OnLongClickListener() {
+    private final View.OnLongClickListener colorModeLongClickHandler = new View.OnLongClickListener() {
         @Override
         public boolean onLongClick(View v) {
             v.startAnimation(animScale);
@@ -134,7 +133,7 @@ public class VisorActivity extends Activity {
         }
     };
 
-    private View.OnClickListener pauseClickHandler = new View.OnClickListener() {
+    private final View.OnClickListener pauseClickHandler = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             v.startAnimation(animScale);
@@ -164,7 +163,7 @@ public class VisorActivity extends Activity {
         mFlashButton.setAlpha(64);
         mFlashButton.getBackground().setAlpha(64);
 
-        /** enable pinch to zoom via PhotoView from https://github.com/chrisbanes/PhotoView */
+        /* enable pinch to zoom via PhotoView from https://github.com/chrisbanes/PhotoView */
         mPhotoView.setImageBitmap(mVisorView.getBitmap());
 
         mVisorView.setAlpha(0);
@@ -192,7 +191,7 @@ public class VisorActivity extends Activity {
         }
     }
 
-    private View.OnClickListener openSettingsClickHandler = new View.OnClickListener() {
+    private final View.OnClickListener openSettingsClickHandler = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
@@ -200,7 +199,7 @@ public class VisorActivity extends Activity {
         }
     };
 
-    private View.OnClickListener flashLightClickHandler = new View.OnClickListener() {
+    private final View.OnClickListener flashLightClickHandler = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             v.startAnimation(animScale);
@@ -209,14 +208,14 @@ public class VisorActivity extends Activity {
             mVisorView.nextFlashlightMode(getApplicationContext());
         }
     };
-    private View.OnClickListener screenshotClickHandler = new View.OnClickListener() {
+    private final View.OnClickListener screenshotClickHandler = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             v.startAnimation(animScale);
             takeScreenshot();
         }
     };
-    private View.OnLongClickListener tapAndHoldListener = new View.OnLongClickListener() {
+    private final View.OnLongClickListener tapAndHoldListener = new View.OnLongClickListener() {
         @Override
         public boolean onLongClick(View v) {
             mVisorView.toggleAutoFocusMode();
@@ -224,7 +223,7 @@ public class VisorActivity extends Activity {
         }
     };
 
-    private SeekBar.OnSeekBarChangeListener zoomSliderChangelistener = new SeekBar.OnSeekBarChangeListener() {
+    private final SeekBar.OnSeekBarChangeListener zoomSliderChangelistener = new SeekBar.OnSeekBarChangeListener() {
         @Override
         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
             if (cameraPreviewState) {
@@ -250,7 +249,6 @@ public class VisorActivity extends Activity {
     private ImageButton mPauseButton;
     private ImageButton mFlashButton;
     private Animation animScale;
-    private Animation animScaleLongPress;
 
     /**
      * sends a {@link Toast} message to the user and quits the app immediately.
@@ -312,20 +310,13 @@ public class VisorActivity extends Activity {
             // Api level 1
             int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
 
-            // Jelly Bean to Kitkat-1
-            if(android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                uiOptions = uiOptions
+            uiOptions = uiOptions
                         | View.SYSTEM_UI_FLAG_FULLSCREEN
                         | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                         | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                         | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                        | View.SYSTEM_UI_FLAG_FULLSCREEN;
-            }
-
-            // Kitkat to Oreo
-            if(android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                uiOptions = uiOptions | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY; // 19
-            }
+                        | View.SYSTEM_UI_FLAG_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
 
             decorView.setSystemUiVisibility(uiOptions);
         }
@@ -346,7 +337,7 @@ public class VisorActivity extends Activity {
 
         if (requestCode == CAMERA_PERMISSION_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                restartActvitiy();
+                restartActivity();
             } else {
                 Toast.makeText(this,
                         "Camera Permission Denied",
@@ -356,7 +347,7 @@ public class VisorActivity extends Activity {
         }
     }
 
-    private void restartActvitiy() {
+    private void restartActivity() {
         Intent intent = new Intent(getApplicationContext(), this.getClass());
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
@@ -379,7 +370,7 @@ public class VisorActivity extends Activity {
         }
 
         animScale = AnimationUtils.loadAnimation(this, R.anim.scale);
-        animScaleLongPress = AnimationUtils.loadAnimation(this, R.anim.longpress);
+        AnimationUtils.loadAnimation(this, R.anim.longpress);
 
         mVisorView = new VisorSurface(this);
         mPhotoView = new PhotoView(this);
@@ -416,8 +407,8 @@ public class VisorActivity extends Activity {
      *
      */
     private void setButtonListeners() {
-        ImageButton settingsButtonm = findViewById(R.id.settings_button);
-        settingsButtonm.setOnClickListener(openSettingsClickHandler);
+        ImageButton settingsButton = findViewById(R.id.settings_button);
+        settingsButton.setOnClickListener(openSettingsClickHandler);
 
         // Add a listener to the Zoom slider
         SeekBar zoomSlider =  findViewById(R.id.zoom_slider);
@@ -468,7 +459,7 @@ public class VisorActivity extends Activity {
             setBrightnessToMaximum();
         }
 
-        if (cameraPreviewState != true && mPhotoView != null) {
+        if (!cameraPreviewState && mPhotoView != null) {
             cameraPreviewState = true;
             cameraPreviewIsActive(mPauseButton);
         }

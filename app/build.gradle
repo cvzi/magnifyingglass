@@ -3,7 +3,34 @@ apply plugin: 'kotlin-android'
 
 android {
     namespace "magnifying.glass"
-    compileSdk 36
+
+    compileSdk = 36
+
+    if (project.hasProperty("keystore")) {
+        signingConfigs {
+            release {
+                storeFile file(project.property("keystore") as String)
+                storePassword project.property("keystorepassword") as String
+                keyAlias project.property("keystorealias") as String
+                keyPassword project.property("keystorekeypassword") as String
+                enableV1Signing true
+                enableV2Signing true
+                enableV3Signing true
+            }
+        }
+    } else {
+        signingConfigs {
+            release {
+                storeFile rootProject.file("mykey.jks")
+                storePassword "password"
+                keyAlias "key0"
+                keyPassword "password"
+                enableV1Signing true
+                enableV2Signing true
+                enableV3Signing true
+            }
+        }
+    }
 
     defaultConfig {
         applicationId "magnifying.glassopensource"
@@ -13,30 +40,24 @@ android {
         versionName "1.0"
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
-    }
-    kotlinOptions {
-        jvmTarget = "17"
+        sourceCompatibility JavaVersion.VERSION_21
+        targetCompatibility JavaVersion.VERSION_21
     }
 
     buildTypes {
         release {
+            signingConfig signingConfigs.release
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             debuggable false
-            jniDebuggable false
-            zipAlignEnabled true
         }
     }
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'androidx.appcompat:appcompat:1.7.0'
-    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'com.github.chrisbanes:PhotoView:2.3.0'
-    implementation 'androidx.core:core-ktx:1.13.1'
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation 'androidx.preference:preference:1.2.1'
+    implementation libs.appcompat
+    implementation libs.legacy.support.v4
+    implementation libs.photoview
+    implementation libs.core.ktx
+    implementation libs.preference
 }

@@ -1,0 +1,115 @@
+name: 🔨 Gradle Build
+
+on:
+  push:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+      attestations: write
+      contents: write
+
+    steps:
+    - name: ⬇️ Checkout repository
+      uses: actions/checkout@v6
+
+    - name: ♨️ JDK
+      uses: actions/setup-java@v5
+      with:
+        distribution: 'temurin'
+        java-version: '21'
+        check-latest: true
+
+    - name: ❎ Add exec permission
+      run: chmod +x gradlew
+
+    - name: 🕵️ Validate Gradle Wrapper
+      uses: gradle/actions/wrapper-validation@v6
+
+    - name: 🔐 Decrypt keystore
+      run: |
+        echo "${{secrets.KEYSTORE}}" > github_release.jks.asc
+        gpg -d --passphrase "${{secrets.KEYSTORE_FILE_PASSWORD}}" --batch --output github_release.jks github_release.jks.asc
+
+    - name: 🎁 Build
+      run: |
+        ./gradlew build
+
+    - name: 🎁 Build release (common key)
+      run: |
+        ./gradlew assembleRelease \
+        --project-prop keystore=../github_release.jks \
+        --project-prop keystorepassword="${{secrets.KEYSTORE_PASSWORD}}" \
+        --project-prop keystorealias="${{secrets.KEYSTORE_KEY_ALIAS}}" \
+        --project-prop keystorekeypassword="${{secrets.KEYSTORE_KEY_PASSWORD}}"
+
+    - name: 🔖 Rename apk file
+      run: |
+        mv app/build/outputs/apk/release/app-release.apk mag_commit_${{ github.sha }}.apk
+
+    - name: 📜 Attest
+      if: false
+      uses: actions/attest-build-provenance@v4
+      with:
+        subject-path: 'mag_commit_${{ github.sha }}.apk'
+
+    - name: 🤖 Upload apk
+      uses: actions/upload-artifact@v7
+      with:
+        name: signed-apk
+        path: mag_commit_${{ github.sha }}.apk
+
+    - name: 🎁 Build release (release key)
+      run: |
+        ./gradlew assembleRelease \
+        --project-prop keystore=../github_release.jks \
+        --project-prop keystorepassword="${{secrets.KEYSTORE_PASSWORD}}" \
+        --project-prop keystorealias="${{secrets.KEYSTORE_KEY_ALIAS_2}}" \
+        --project-prop keystorekeypassword="${{secrets.KEYSTORE_KEY_PASSWORD_2}}"
+
+    - name: 💬 Upload Lint report
+      if: always()
+      uses: actions/upload-artifact@v7
+      with:
+        name: lint-results.html
+        path: app/build/reports/lint-results*.html
+
+    - name: 🏷️ Extract versionCode
+      id: version
+      run: |
+        versionCode=$(grep -Po "versionCode\s+\K[0-9]+" app/build.gradle)
+        echo "versionCode: $versionCode"
+        echo "versionCode=$versionCode" >> $GITHUB_OUTPUT
+
+    - name: 🔖 Rename apk file
+      run: |
+        mv app/build/outputs/apk/release/app-release.apk mag${{ steps.version.outputs.versionCode }}.apk
+
+    - name: 📜 Attest
+      if: ${{ github.ref_type == 'tag' }}
+      uses: actions/attest-build-provenance@v4
+      with:
+        subject-path: 'mag${{ steps.version.outputs.versionCode }}.apk'
+
+    - name: 🤖 Upload apk
+      if: ${{ github.ref_type == 'tag' }}
+      uses: actions/upload-artifact@v7
+      with:
+        name: release-apk
+        path: mag${{ steps.version.outputs.versionCode }}.apk
+
+    - name: 🎉 Publish Github release
+      if: ${{ github.ref_type == 'tag' }}
+      uses: softprops/action-gh-release@v2
+      with:
+        files: mag${{ steps.version.outputs.versionCode }}.apk
+        body_path: fastlane/metadata/android/en-US/changelogs/${{ steps.version.outputs.versionCode }}.txt
