@@ -5,6 +5,16 @@ Forked from https://github.com/kloener/visor-android
 
 *Magnifying Glass* transforms your Android device into a simple, powerful magnifier for low-vision use. Enlarge hard-to-read text with the live camera preview, zoom in for extra clarity, and enhance visibility with high-contrast color modes optimized for printed text. Pause the image anytime and save it for later reference.
 
+## Screenshots
+
+<p align="center">
+  <a href="fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot0.jpg">
+    <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot0.jpg" alt="Screenshot ballpoint pen" width="250"/>
+  </a>
+  <a href="fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot1.jpg">
+    <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot1.jpg" alt="Screenshot text" width="250"/>
+  </a>
+</p>
 
 ## License
 
