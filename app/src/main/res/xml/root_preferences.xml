@@ -46,7 +46,8 @@
 
     </PreferenceCategory>
 
-    <PreferenceCategory app:title="@string/about_header">
+    <PreferenceCategory app:title="@string/about_header"
+        app:icon="@android:drawable/ic_menu_info_details">
 
         <Preference
             app:key="@string/key_preference_original_copyright_info"

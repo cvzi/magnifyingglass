@@ -15,6 +15,7 @@ import android.content.Intent
 import android.hardware.Camera
 import android.os.Bundle
 import android.view.MenuItem
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AlertDialog
 import androidx.preference.DropDownPreference
@@ -22,6 +23,9 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import kotlin.math.max
 import androidx.core.net.toUri
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 
 
 class SettingsActivity : AppCompatActivity() {
@@ -53,6 +57,19 @@ class SettingsActivity : AppCompatActivity() {
             initCameraChooser()
             initLicenseDialog()
             initRepositoryLink()
+        }
+
+        override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+            super.onViewCreated(view, savedInstanceState)
+
+            ViewCompat.setOnApplyWindowInsetsListener(listView) { preferenceList, insets ->
+                val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+                preferenceList.updatePadding(
+                    top = systemBars.top,
+                    bottom = systemBars.bottom
+                )
+                insets
+            }
         }
 
         private fun initCameraChooser() {
