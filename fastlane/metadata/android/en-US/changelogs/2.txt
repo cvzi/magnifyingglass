@@ -1,0 +1,1 @@
+Fix settings in edge-to-edge mode
